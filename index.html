@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KeyKety Gateway</title>
+    <title>Gateway usada</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
-            background: linear-gradient(54deg, #05031C, #0D0D36);
+            background: linear-gradient(54deg, #0A0910, #0C0C1B);
             color: #ffffff;
-            margin: 2;
+            margin: 0;
             padding: 0;
             display: flex;
             justify-content: center;
@@ -20,36 +20,20 @@
 
         .container {
             text-align: center;
-            background: linear-gradient(195deg, #131628, #05071C, #040722, #05092C, #071161);
-            border: 1px solid  #1C204AD1;
+            background: linear-gradient(195deg, #1D213A45, #1414402B);
+            border: 1px solid #21243F;
             border-radius: 15px;
             padding: 40px;
             width: 100%;
             max-width: 400px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            font-size: 12px;
         }
 
         h1 {
             font-size: 2.5em;
             margin-bottom: 20px;
             font-weight: 600;
-        }
-
-        .gateway-button {
-            background-color: #6B00FF;
-            color: white;
-            padding: 15px 30px;
-            font-size: 1.2em;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .gateway-button:hover {
-            background-color: #180050;
-            outline: 1px solid #3A00BE;
-            -webkit-tap-highlight-color: transparent
         }
 
         .info-text {
@@ -63,13 +47,21 @@
             bottom: 10px;
             font-size: 0.8em;
         }
+
+        a {
+            color: #FF00A5D1;
+            text-decoration: none;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>KeyKety Gateway</h1>
-        <button class="gateway-button" onclick="generateLink()">Obter Chave</button>
-        <p class="info-text">A chave gerada será válida por 48 horas.</p>
+        <img src="/780 Sem Título_20250121155300.png" height="50px" width="50px">
+        <h1 id="message-heading">Acesso negado.</h1>
+        <p id="message-text">Burla de sistema detectada.</p>
+        <p class="info-text">Isso acontece quando você pega uma URL padrão do site, sem a request válida. <br> 
+        "https://keykety.vercel.app/{no request}"</p>
         <div id="link-container"></div>
     </div>
     <div class="footer">
@@ -77,18 +69,69 @@
     </div>
 
     <script>
+        // Função para gerar a chave e expiração
         function generateLink() {
-            // Gerar link da gateway
             let randomKey = Math.random().toString(36).substr(2, 32); // Gera chave aleatória
-            let link = `${randomKey}`;
             let expirationTime = 48; // Expiração de 48 horas
 
-            // Exibir o link
+            // Salva a chave gerada no armazenamento local (simulando o banco de dados)
+            localStorage.setItem('generatedKey', randomKey);
+            localStorage.setItem('expirationTime', expirationTime);
+            let link = `https://linkvertise.com/${randomKey}`;
+
+            // Exibe o link gerado
             document.getElementById("link-container").innerHTML = `
                 <p>Chave gerada:</p>
-                <a href="${link}" target="_blank" style="color: #FF00A5D1; text-decoration: none;">${link}</a>
+                <a href="${link}" target="_blank">${link}</a>
                 <p>Expira em: ${expirationTime} horas</p>
             `;
+        }
+
+        // Função para verificar a validade da chave e expiração
+        function validateRequest() {
+            // Pega a chave da URL atual (da barra de endereços)
+            const urlParams = new URLSearchParams(window.location.search);
+            const currentKey = urlParams.get('key'); // Exemplo: https://keykety.vercel.app/?key=fwsmu2ysvfs
+
+            if (!currentKey) {
+                // Se não houver chave na URL
+                document.getElementById("message-heading").innerText = "Chave não encontrada";
+                document.getElementById("message-text").innerText = "Não foi possível encontrar a chave na URL.";
+                return;
+            }
+
+            // Recupera a chave gerada e a hora de expiração do armazenamento
+            const generatedKey = localStorage.getItem('generatedKey');
+            const expirationTime = localStorage.getItem('expirationTime');
+            const currentTime = new Date().getTime();
+            const expirationTimeInMs = expirationTime * 60 * 60 * 1000;
+
+            if (currentKey !== generatedKey) {
+                // Se a chave na URL não for a mesma gerada
+                document.getElementById("message-heading").innerText = "Chave inválida";
+                document.getElementById("message-text").innerText = "A chave fornecida não é válida ou já foi usada.";
+                return;
+            }
+
+            if (currentTime > expirationTimeInMs) {
+                // Se a chave expirou
+                document.getElementById("message-heading").innerText = "Chave expirada";
+                document.getElementById("message-text").innerText = "A chave expirou. Gere uma nova chave.";
+                return;
+            }
+
+            // Se a chave for válida e não expirada
+            document.getElementById("message-heading").innerText = "Chave válida!";
+            document.getElementById("message-text").innerText = "Você pode acessar a chave gerada com sucesso.";
+        }
+
+        // Chama a função de validação quando a página é carregada
+        validateRequest();
+        
+        // Chama a função de gerar o link apenas uma vez, quando a página é carregada pela primeira vez
+        // Gerar chave apenas se não houver chave no armazenamento (simula que a chave não foi gerada ainda)
+        if (!localStorage.getItem('generatedKey')) {
+            generateLink();
         }
     </script>
 </body>
