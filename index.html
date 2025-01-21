@@ -78,12 +78,12 @@
 
     <script>
         function generateLink() {
-            // Gerar link simulado do Linkvertise
+            // Gerar link da gateway
             let randomKey = Math.random().toString(36).substr(2, 32); // Gera chave aleatória
-            let link = `https://linkvertise.com/${randomKey}`;
+            let link = `${randomKey}`;
             let expirationTime = 48; // Expiração de 48 horas
 
-            // Exibir o link gerado
+            // Exibir o link
             document.getElementById("link-container").innerHTML = `
                 <p>Chave gerada:</p>
                 <a href="${link}" target="_blank" style="color: #FF00A5D1; text-decoration: none;">${link}</a>
