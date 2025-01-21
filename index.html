@@ -68,6 +68,8 @@
         <p>Gateway gerado pela KeyKety - Todos os direitos reservados</p>
     </div>
 
+    <!-- Script do Linkvertise -->
+    <script src="https://publisher.linkvertise.com/cdn/linkvertise.js"></script>
     <script>
         // Função para gerar a chave e expiração
         function generateLink() {
@@ -77,7 +79,9 @@
             // Salva a chave gerada no armazenamento local (simulando o banco de dados)
             localStorage.setItem('generatedKey', randomKey);
             localStorage.setItem('expirationTime', expirationTime);
-            let link = `https://link-target.net/1230233/get-key${randomKey}`;
+
+            // Gerando o link para ser usado no Linkvertise
+            let link = `https://keykety.vercel.app/?key=${randomKey}`;
 
             // Exibe o link gerado
             document.getElementById("link-container").innerHTML = `
@@ -85,6 +89,9 @@
                 <a href="${link}" target="_blank">${link}</a>
                 <p>Expira em: ${expirationTime} horas</p>
             `;
+
+            // Configuração do Linkvertise
+            linkvertise(1230233, {whitelist: ["https://keykety.vercel.app"], blacklist: []});
         }
 
         // Função para verificar a validade da chave e expiração
