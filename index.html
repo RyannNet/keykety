@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gateway usada</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <title>Gerar Link Único</title>
     <style>
         body {
-            font-family: 'Montserrat', sans-serif;
-            background: linear-gradient(54deg, #0A0910, #0C0C1B);
-            color: #ffffff;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(45deg, #000000, #060F2A);
+            color: #fff;
             margin: 0;
             padding: 0;
             display: flex;
@@ -17,129 +16,55 @@
             align-items: center;
             height: 100vh;
         }
-
         .container {
             text-align: center;
-            background: linear-gradient(195deg, #1D213A45, #1414402B);
-            border: 1px solid #21243F;
+            background: rgba(8, 9, 17, 0.96);
+            padding: 30px;
             border-radius: 15px;
-            padding: 40px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            font-size: 12px;
+            border: 1px solid rgba(33, 40, 57, 0.96);
+            box-shadow: 0 4px 10px rgba(77, 94, 115, 0.4);
         }
-
         h1 {
-            font-size: 2.5em;
+            font-size: 2em;
             margin-bottom: 20px;
-            font-weight: 600;
         }
-
-        .info-text {
-            margin-top: 20px;
-            font-size: 1em;
-            color: #b0b0b0;
+        p {
+            font-size: 1.2em;
         }
-
-        .footer {
-            position: absolute;
-            bottom: 10px;
-            font-size: 0.8em;
-        }
-
         a {
-            color: #FF00A5D1;
+            color: #6E00FF;
             text-decoration: none;
-            font-weight: bold;
+            
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <img src="/780 Sem Título_20250121155300.png" height="50px" width="50px">
-        <h1 id="message-heading">Acesso negado.</h1>
-        <p id="message-text">Burla de sistema detectada.</p>
-        <p class="info-text">Isso acontece quando você pega uma URL padrão do site, sem a request válida. <br> 
-        "https://keykety.vercel.app/{no request}"</p>
-        <div id="link-container"></div>
-    </div>
-    <div class="footer">
-        <p>Gateway gerado pela KeyKety - Todos os direitos reservados</p>
+        <h1>Link Único Gerado</h1>
+        <p id="generated-link">Carregando link...</p>
+        <p>Este link expirará em 48 horas.</p>
     </div>
 
-    <!-- Script do Linkvertise -->
-    <script src="https://publisher.linkvertise.com/cdn/linkvertise.js"></script>
     <script>
-        // Função para gerar a chave e expiração
+        // Função para gerar um link único
         function generateLink() {
-            let randomKey = Math.random().toString(36).substr(2, 32); // Gera chave aleatória
             let expirationTime = 48; // Expiração de 48 horas
+            let uniqueId = Math.random().toString(36).substr(2, 8); // ID único
 
-            // Salva a chave gerada no armazenamento local (simulando o banco de dados)
-            localStorage.setItem('generatedKey', randomKey);
+            // Salva o ID e a expiração no localStorage
+            localStorage.setItem('uniqueId', uniqueId);
             localStorage.setItem('expirationTime', expirationTime);
 
-            // Gerando o link para ser usado no Linkvertise
-            let link = `https://keykety.vercel.app/?key=${randomKey}`;
+            let link = `https://keykety.vercel.app/?id=${uniqueId}`;
 
             // Exibe o link gerado
-            document.getElementById("link-container").innerHTML = `
-                <p>Chave gerada:</p>
+            document.getElementById("generated-link").innerHTML = `
                 <a href="${link}" target="_blank">${link}</a>
-                <p>Expira em: ${expirationTime} horas</p>
             `;
-
-            // Configuração do Linkvertise
-            linkvertise(1230233, {whitelist: ["https://keykety.vercel.app"], blacklist: []});
         }
 
-        // Função para verificar a validade da chave e expiração
-        function validateRequest() {
-            // Pega a chave da URL atual (da barra de endereços)
-            const urlParams = new URLSearchParams(window.location.search);
-            const currentKey = urlParams.get('key'); // Exemplo: https://keykety.vercel.app/?key=fwsmu2ysvfs
-
-            if (!currentKey) {
-                // Se não houver chave na URL
-                document.getElementById("message-heading").innerText = "Chave não encontrada";
-                document.getElementById("message-text").innerText = "Não foi possível encontrar a chave na URL.";
-                return;
-            }
-
-            // Recupera a chave gerada e a hora de expiração do armazenamento
-            const generatedKey = localStorage.getItem('generatedKey');
-            const expirationTime = localStorage.getItem('expirationTime');
-            const currentTime = new Date().getTime();
-            const expirationTimeInMs = expirationTime * 60 * 60 * 1000;
-
-            if (currentKey !== generatedKey) {
-                // Se a chave na URL não for a mesma gerada
-                document.getElementById("message-heading").innerText = "Chave inválida";
-                document.getElementById("message-text").innerText = "A chave fornecida não é válida ou já foi usada.";
-                return;
-            }
-
-            if (currentTime > expirationTimeInMs) {
-                // Se a chave expirou
-                document.getElementById("message-heading").innerText = "Chave expirada";
-                document.getElementById("message-text").innerText = "A chave expirou. Gere uma nova chave.";
-                return;
-            }
-
-            // Se a chave for válida e não expirada
-            document.getElementById("message-heading").innerText = "Chave válida!";
-            document.getElementById("message-text").innerText = "Você pode acessar a chave gerada com sucesso.";
-        }
-
-        // Chama a função de validação quando a página é carregada
-        validateRequest();
-        
-        // Chama a função de gerar o link apenas uma vez, quando a página é carregada pela primeira vez
-        // Gerar chave apenas se não houver chave no armazenamento (simula que a chave não foi gerada ainda)
-        if (!localStorage.getItem('generatedKey')) {
-            generateLink();
-        }
+        // Chama a função de gerar o link ao carregar a página
+        generateLink();
     </script>
 </body>
 </html>
